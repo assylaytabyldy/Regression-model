@@ -1,0 +1,275 @@
+
+\documentclass[a4paper,12pt,reqno]{amsart}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[a4paper]{geometry}
+\usepackage{mathrsfs}
+\usepackage{csquotes}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+
+\usepackage[style=apa]{biblatex}
+\addbibresource{ref.bib}
+%\usepackage{romannum}
+%\usepackage{esint}
+
+%https://www.overleaf.com/project/630796816809500a29e1254e
+%\usepackage{draftcopy}
+\usepackage[colorlinks]{hyperref}
+\renewcommand\eqref[1]{(\ref{#1})} %Need with hyperref
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\setlength{\textwidth}{15.2cm}
+\setlength{\textheight}{22.7cm}
+\setlength{\topmargin}{0mm}
+\setlength{\oddsidemargin}{3mm}
+\setlength{\evensidemargin}{3mm}
+%\setlength{\headsep}{2.9cm}
+\setlength{\footskip}{1cm}
+\DeclareMathOperator\supp{supp}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\numberwithin{equation}{section}
+\theoremstyle{plain}
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{cor}[thm]{Corollary}
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{exa}[thm]{Example}
+\theoremstyle{definition}
+\newtheorem{defn}[thm]{Definition}
+\newtheorem{rem}[thm]{Remark}
+\newtheorem{ex}[thm]{Example}
+
+\renewcommand{\wp}{\mathfrak S}
+
+\def\G{{\mathbb G}}
+\def\R{{\mathcal R}}
+\def\L{{\mathcal L}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%   \documentclass{rmmcart}
+
+\begin{document}
+
+\begin{titlepage}
+    \vfill
+    \centering
+    \vspace*{0.5cm}
+    {\Large\bfseries MATH 440: Regression Analysis\par}
+    \vspace{1cm}
+    {\today\par}
+    \vspace{1pt}
+    \includegraphics[width=0.3\textwidth]{pics/nu_logo_0.png}\\
+    \includegraphics[width=0.15\textwidth]{pics/SSH-eng.png}
+    \vspace{0.5cm}
+    
+    Submitted for {\bf MATH 440: Regression Analysis} at the Department of Mathematics, the School of Sciences and Humanities, Nazarbayev University
+    \vspace{0.5cm}
+    \begin{center}
+    {\large Submitted by:}
+    \end{center}
+    \begin{center}
+        \begin{tabular}{c}
+            Anel Kim - ID: 202199851 \\
+            Assylay Tabyldy - ID:202123562 \\
+            Kamila Orazbek - ID:202148424 \\
+        \end{tabular}
+    \end{center}
+    \vspace{0.5cm}
+    \centering{
+   {\bf Project}: Optimizing Mathematics Elective Choices to Maximize GPA at Nazarbayev University\\
+  Instructor Name: {\bf Piotr Sebastian Skrzypacz} \\
+    } 
+    \vspace{0.5cm}
+    {\footnotesize In submitting this work, we indicate
+    that we have read the University's Academic Integrity Policy. We
+    declare that all material in this assessment is our work except
+    where there is clear acknowledgment and reference to the work of
+    others.\par}
+    \vfill
+    
+\end{titlepage}
+	
+\title
+{Optimizing Mathematics Elective Choices to Maximize GPA at Nazarbayev University}
+	
+	
+	\author{Kamila Orazbek, Assylay Tabyldy, Anel Kim}
+	
+	
+\begin{abstract}
+This study examines how Mathematics students at Nazarbayev University can optimize elective course selection to maximize Grade Point Average (GPA) while accounting for academic risk. Prior research suggests that students often prioritize expected grades over personal interest due to the signaling role of GPA in academic and labor market outcomes. Using institutional data on upper-level Mathematics electives, we apply multiple regression models, including Linear, Ridge, Lasso, and Random Forest, to analyze the relationship between course characteristics and GPA. Key factors such as failure rates, withdrawal rates, and grade variability are incorporated into the analysis. To complement predictive modeling, we develop a composite ranking framework that balances expected GPA with risk measures. The findings highlight substantial variation across courses and demonstrate that high-GPA courses may still carry significant risk. The proposed risk-adjusted approach provides a more reliable tool for elective decision-making and illustrates the value of data-driven methods in academic planning.
+\end{abstract}
+\maketitle
+\section{Introduction}
+The selection of major electives is an inevitable decision every student at Nazarbayev University must face. Over the course of four years, Mathematics students are required to complete 9 electives from 300- and 400-level courses. These choices play a significant role not only in shaping academic interests and specialization but also in influencing overall academic performance.
+
+A growing body of literature suggests that elective selection is rarely driven purely by intellectual curiosity. Instead, expected academic outcomes—particularly anticipated grades—play a dominant role in students’ decision-making processes. Empirical studies have consistently shown that expected grade is one of the most significant determinants of course selection, often outweighing personal interest or long-term skill development (Sample, C., 2018, p. 1). This tendency can be explained by the role of GPA as a signaling mechanism in the labor market, where higher grades are interpreted as indicators of student ability, regardless of the specific courses taken \parencite[p.~1]{Sample2018}.
+
+Furthermore, research highlights that students strategically respond to differences in grading distributions across courses. Courses perceived as more lenient or having higher average grades tend to attract more students, while those with stricter grading—often technical or mathematically rigorous courses—are avoided (Sample, C., 2018, pp. 2–3). This behavior is particularly evident among students of average academic ability, who face a trade-off between maximizing learning and maximizing GPA. Such students may sacrifice personal academic interests in favor of courses that increase the likelihood of achieving higher grades \parencite[pp.8-9]{Sample2018}.
+
+This grade-maximization behavior can lead to broader inefficiencies. Prior research suggests that students’ strategic avoidance of more challenging courses results in “welfare losses,” where both students and the labor market are negatively affected. Students may miss opportunities to acquire valuable technical skills, while employers may be unable to accurately distinguish between high- and average-ability candidates due to GPA inflation \parencite[pp.2,8]{Sample2018}. Additionally, the availability of public information about grading distributions further reinforces this behavior, as students actively use such data to optimize their course choices \parencite[p.~3]{Sample2018}.
+
+Many students at Nazarbayev University are highly concerned with maintaining a strong Grade Point Average (GPA), which is often a key factor for scholarships, graduate school applications, and future career opportunities. However, elective selection is frequently based on informal advice and personal perception rather than systematic data analysis. As a result, students may unknowingly choose courses that carry higher academic risk, such as elevated failure or withdrawal rates, despite having seemingly high average GPAs.
+
+This project aims to address this gap by applying regression analysis to historical course data to identify mathematics elective courses that optimize student outcomes. In particular, we aim to determine which courses maximize expected GPA while accounting for risk factors such as failure and withdrawal rates. By constructing a risk-adjusted evaluation model, we provide a more comprehensive framework for elective selection.
+
+In general, this study offers practical insight for students making course decisions, while also demonstrating how statistical modeling can be applied to real-world academic planning problems.
+\section{Data}
+\subsection{Data Preprocessing}
+The data set used in this study was obtained from the official statistics reports of Nazarbayev University published by the Office of the Registrar (\cite{NU2025grades}). These reports contain detailed information on course offerings, including average GPA, grade distributions, number of students, and withdrawal statistics for each course and semester.
+
+The data cleaning process was divided into two stages: manual filtering and coded data preprocessing. First, we manually filtered the data to include only upper-level Mathematics electives (300- and 400-level courses). Core Mathematics courses, specifically MATH 350, 361, 351, 302, 322, and 321, were excluded because they are mandatory and not subject to choice. During the coded preprocessing phase, we excluded all 490+ level courses because they either correspond to capstone courses assessed on a Pass/Fail basis or Special Topics courses, which vary significantly across semesters.
+
+\subsection{Data Analysis}
+From the gathered data, we illustrated the dependencies, distributions, and relationships between key variables through several graphs. 
+
+The histogram in Figure~\ref{fig:gpa_distribution} shows that most course GPAs are concentrated around the mean value of approximately $2.86$, with relatively few extreme values. The accompanying boxplot compares GPA across semesters (Spring and Fall) and indicates that GPA distributions are generally similar, with only minor variation between semesters.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\linewidth]{pics/01_gpa_distribution.png}
+    \caption{GPA Distribution}
+    \label{fig:gpa_distribution}
+\end{figure}
+
+The feature correlation matrix in Figure~\ref{fig:correlation_matrix} summarizes relationships between variables. Average GPA is negatively correlated with failure and risk rates, while standard deviation shows a positive correlation with these risk-related variables. The matrix also highlights correlations among the risk-related features themselves.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\linewidth]{pics/02_correlation_matrix.png}
+    \caption{Correlation Matrix}
+    \label{fig:correlation_matrix}
+\end{figure}
+
+The average GPA by course in Figure~\ref{fig:gpa_by_course} presents weighted average GPA for each course, accounting for class size. The chart shows noticeable variation across electives, with some courses consistently above and others below the overall mean.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\linewidth]{pics/03_gpa_by_course.png}
+    \caption{GPA by course}
+    \label{fig:gpa_by_course}
+\end{figure}
+
+Finally, Figure~\ref{fig:gpa_time_trend} illustrates the weighted average GPA over time. While fluctuations are present, there is no clear long-term increasing or decreasing trend.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\linewidth]{pics/05_gpa_time_trend.png}
+    \caption{GPA over time trend}
+    \label{fig:gpa_time_trend}
+\end{figure}
+
+\section{Methodology}
+To identify Mathematics electives that optimize student outcomes, we considered a combination of regression modeling and composite scoring techniques. 
+The core of our analysis is based on regression models that estimate the relationship between course characteristics and average GPA. Each observation in the dataset represents a specific course–semester–year combination, allowing us to model variation across time and courses.
+
+We constructed feature variables using both raw and derived metrics, including standard deviation of grades (SD), number of graded students, failure rate (\%F), withdrawal rate (\%W/AW), and D-grade rate (\%D). In addition, course identifiers were encoded using one-hot encoding, enabling the model to estimate a separate effect for each course. This effectively allows the regression to learn how much each course shifts GPA relative to others.
+
+To account for temporal effects, the variable Year was included in the model. This controls for potential grade inflation or other time-related trends, ensuring that course comparisons are not biased by when they were offered.
+
+\subsection{Models}
+We implemented several regression models to balance interpretability and predictive performance:
+\begin{itemize}
+    \item Linear Regression - a baseline model used to establish a direct, interpretable relationship between predictors and GPA. It allows us to examine how factors such as failure rate or variability in grades influence outcomes.
+    \item Ridge Regression - an extension of linear regression that applies $L2$ regularization. This is particularly important in our setting because many predictors are correlated (e.g., grade distributions). Ridge regression stabilizes coefficient estimates and improves generalization.
+    \item Lasso Regression - this model applies $L1$ regularization and performs implicit feature selection by shrinking less important coefficients toward zero. It helps identify the most influential predictors of GPA.
+    \item Random Forest Regressor - a non-linear ensemble method used to capture complex relationships between variables. Unlike linear models, it can model interactions and non-linear effects, providing stronger predictive accuracy. Feature importance from this model is also used to assess which variables most influence GPA.
+\end{itemize} 
+
+To evaluate model performance, we used a time-based train-test split, where earlier years were used for training and more recent years for testing. This approach better reflects real-world prediction scenarios and avoids information leakage. Model performance was assessed using metrics such as $R^2$, Root Mean Squared Error (RMSE), and Mean Absolute Error (MAE).
+
+While regression models predict GPA, our goal is not solely to identify high-GPA courses, but rather courses that balance high performance with low academic risk. To achieve this, we constructed a composite ranking score at the course level.
+First, course-level aggregates were computed using weighted averages (with the number of graded students as weights). Then, key features, which are average GPA, risk rate (combining failure and withdrawal), popularity, and grade variability, were normalized to a common scale. The final score was calculated as a weighted combination of these factors, rewarding high GPA and popularity while penalizing high risk and variability.
+This ranking framework complements the regression models by translating predictions into actionable recommendations, allowing us to identify electives that are both high-performing and relatively safe.
+
+\section{Results}
+
+\subsection{Descriptive Findings}
+
+The descriptive analysis indicates that the average GPA across upper-level Mathematics electives is concentrated around 2.8--2.9, with moderate dispersion. Despite this relatively stable central tendency, there is substantial variation in risk-related metrics across courses. Some electives exhibit minimal failure and withdrawal rates, while others show combined risk rates exceeding 30\%, suggesting notable differences in course difficulty and grading outcomes.
+
+\subsection{Model Performance}
+
+Table~\ref{tab:metrics} summarizes the performance of the regression models used to predict GPA. Among all models, the Random Forest Regressor achieves the highest predictive accuracy, with the largest test $R^2$ and the lowest error metrics. Lasso regression also performs well, indicating that feature selection improves generalization. Linear and Ridge regression models show similar performance but slightly lower predictive power.
+
+\begin{table}[H]
+\centering
+\caption{Model Performance Metrics}
+\label{tab:metrics}
+\begin{tabular}{lcccc}
+\hline
+Model & Train $R^2$ & Test $R^2$ & RMSE & MAE \\
+\hline
+Linear Regression & 0.8413 & 0.5655 & 0.3055 & 0.2444 \\
+Ridge Regression  & 0.8412 & 0.5694 & 0.3041 & 0.2433 \\
+Lasso Regression  & 0.8246 & 0.6412 & 0.2776 & 0.2284 \\
+Random Forest     & 0.9474 & 0.6826 & 0.2611 & 0.1953 \\
+\hline
+\end{tabular}
+\end{table}
+
+The results indicate that Random Forest captures non-linear relationships between predictors and GPA more effectively than linear models. Additionally, the gap between training and test $R^2$ suggests mild overfitting in the Random Forest model; however, its superior test performance confirms strong generalization. Overall, these findings support the use of non-linear and regularized models in predicting academic outcomes.
+
+\subsection{Determinants of GPA}
+
+Regression analysis reveals that risk-related variables are key determinants of GPA outcomes. Table~\ref{tab:coefficients} presents the direction of the main coefficients from the linear model.
+
+\begin{table}[H]
+\centering
+\caption{Direction of Key Regression Coefficients}
+\label{tab:coefficients}
+\begin{tabular}{lc}
+\hline
+Variable & Effect on GPA \\
+\hline
+Failure Rate (\%F) & Negative \\
+D-grade Rate (\%D) & Negative \\
+Withdrawal Rate (\%W) & Negative \\
+Standard Deviation & Negative \\
+\hline
+\end{tabular}
+\end{table}
+
+Higher failure rates, grade variability, and proportions of low grades are consistently associated with lower average GPA. These findings are reinforced by the Random Forest model, where feature importance analysis identifies D-grade rate and grade variability as the most influential predictors, followed by failure rate.
+
+\subsection{Course Ranking and Optimization}
+
+To translate model outputs into actionable insights, a composite scoring framework was constructed to rank courses based on both expected GPA and academic risk. Table~\ref{tab:ranking} presents a subset of the top-ranked electives.
+
+\begin{table}[H]
+\centering
+\caption{Top Ranked Mathematics Electives}
+\label{tab:ranking}
+\begin{tabular}{lc}
+\hline
+Course & Relative Performance \\
+\hline
+MATH 446 & High GPA, Low Risk \\
+MATH 476 & High GPA, Low Risk \\
+MATH 449 & High GPA, Low Risk \\
+\hline
+\end{tabular}
+\end{table}
+
+The ranking results demonstrate that courses with high average GPA are not always associated with low academic risk. By incorporating both dimensions, the composite score provides a more reliable basis for elective selection.
+
+\subsection{Key Findings}
+
+The main findings of this study can be summarized as follows:
+\begin{itemize}
+    \item There is significant heterogeneity across Mathematics electives in terms of both GPA and academic risk.
+    \item Risk-related variables, particularly failure rate and grade variability, are strong predictors of GPA outcomes.
+    \item Non-linear models outperform linear approaches, indicating complex relationships between variables.
+    \item A risk-adjusted ranking framework provides more informative guidance than relying solely on average GPA.
+\end{itemize}
+\section{Conclusion}
+\printbibliography
+
+\end{document}
